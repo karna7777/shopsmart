@@ -1,0 +1,174 @@
+# ShopSmart DevOps Final Guide
+
+## What to Say First
+
+ShopSmart is a simple full-stack project used to demonstrate a DevOps pipeline. The focus of this final evaluation is not database complexity. The focus is automated testing, CI/CD, Docker, infrastructure provisioning, AWS deployment, and explaining the workflow clearly.
+
+## Architecture
+
+Frontend:
+
+- React app in `client/`
+- Calls the backend health API
+- Can be deployed separately on Vercel, Render Static, or S3/CloudFront
+
+Backend:
+
+- Express app in `server/`
+- Exposes `/api/health`
+- Packaged as a Docker image for AWS deployment
+
+DevOps:
+
+- GitHub Actions runs tests and lint checks
+- Terraform provisions AWS resources
+- Docker builds the backend image
+- ECR stores the image
+- ECS or EC2 runs the deployed backend
+
+## Rubric Mapping
+
+Regularity:
+
+- Use small commits for Docker, Terraform, CI, and docs.
+- Avoid one large final commit.
+
+GitHub Workflows / CI:
+
+- `.github/workflows/aws-ecs-pipeline.yml`
+- Runs on `push`, `pull_request`, and manual dispatch.
+- Installs dependencies, lints backend, tests backend, and builds frontend.
+
+Frontend:
+
+- React code is in `client/`.
+- It calls `/api/health` and shows backend status.
+
+Unit Testing:
+
+- Backend test is in `server/tests/app.test.js`.
+- Frontend test is in `client/src/App.test.jsx`.
+
+Integration Testing:
+
+- Backend test uses Supertest to call the Express API.
+
+E2E Testing:
+
+- Optional bonus. Add Playwright later if needed.
+
+PR Checks:
+
+- Pull requests trigger the workflow.
+- Bad tests or lint failures block the PR.
+
+Dependabot:
+
+- `.github/dependabot.yml` checks backend, frontend, and GitHub Actions dependencies.
+
+AWS EC2 / GitHub Integration:
+
+- `scripts/ec2-deploy.sh` is an idempotent deployment script for EC2.
+- `.github/workflows/aws-ec2-deploy.yml` SSHs into EC2 and runs this script.
+
+Terraform:
+
+- `infra/terraform/` provisions S3, ECR, ECS cluster, and logs.
+- S3 has versioning, encryption, and public access blocked.
+
+Docker:
+
+- `server/Dockerfile` uses multi-stage build.
+- It runs as a non-root user.
+- It includes a health check.
+
+## GitHub Secrets Needed
+
+Add these in GitHub:
+
+`Settings -> Secrets and variables -> Actions -> New repository secret`
+
+Required for AWS:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN`
+- `AWS_REGION`
+- `TF_BUCKET_SUFFIX`
+
+Optional for ECS service redeploy:
+
+- `ECS_SERVICE`
+
+For EC2 deployment:
+
+- `EC2_HOST`
+- `EC2_USER`
+- `EC2_SSH_KEY`
+
+## EC2 Deployment Steps
+
+Use this route if your evaluator asks specifically for GitHub Actions connected to EC2.
+
+1. Launch an EC2 Ubuntu instance.
+2. Open inbound ports in the EC2 security group:
+   - SSH: `22`
+   - Backend: `5001`
+3. SSH into EC2 once and install Node.js, Git, and PM2.
+4. Add your EC2 private key, host, and user to GitHub Secrets.
+5. Go to GitHub Actions.
+6. Open `AWS EC2 Deploy`.
+7. Click `Run workflow`.
+8. Test the backend:
+
+```bash
+curl http://your-ec2-public-ip:5001/api/health
+```
+
+## Beginner AWS Deployment Path
+
+### Step 1: Create AWS Credentials
+
+Use your AWS Academy or AWS account credentials. Add the access key, secret key, session token, and region to GitHub Secrets.
+
+### Step 2: Run Terraform
+
+The workflow will run Terraform automatically after a push to `main`.
+
+Terraform creates:
+
+- S3 bucket
+- ECR repository
+- ECS cluster
+- CloudWatch log group
+
+### Step 3: Build Docker Image
+
+GitHub Actions builds the Docker image from `server/Dockerfile`.
+
+### Step 4: Push Docker Image to ECR
+
+The workflow pushes the image to Amazon ECR with two tags:
+
+- Git commit SHA
+- `latest`
+
+### Step 5: Deploy
+
+For mid-evaluation recovery, explain either:
+
+- ECS path: image in ECR, ECS cluster created, service redeployed
+- EC2 path: GitHub Actions SSHs into EC2 and runs an idempotent deploy script
+
+## Presentation Script
+
+1. "My project is ShopSmart, and I used it to demonstrate a DevOps pipeline."
+2. "The frontend is React and the backend is Express."
+3. "The backend exposes a health endpoint used for testing and Docker health checks."
+4. "On every push or pull request, GitHub Actions installs dependencies, runs lint, runs tests, and builds the app."
+5. "Terraform provisions AWS infrastructure like S3, ECR, ECS cluster, and CloudWatch logs."
+6. "The Dockerfile uses a multi-stage build, non-root user, and a health check."
+7. "GitHub Actions authenticates with AWS using repository secrets."
+8. "The image is pushed to ECR and can be deployed to ECS or EC2."
+9. "The EC2 script is idempotent because it can be run multiple times safely."
+10. "The main challenge was connecting local development, GitHub Actions, Docker, and AWS into one workflow."
