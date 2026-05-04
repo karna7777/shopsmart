@@ -1,5 +1,6 @@
 locals {
-  name_prefix = "${var.project_name}-${var.bucket_suffix}"
+  safe_bucket_suffix = lower(trimspace(var.bucket_suffix))
+  name_prefix        = "${var.project_name}-${local.safe_bucket_suffix}"
 }
 
 resource "aws_s3_bucket" "artifacts" {
@@ -34,6 +35,8 @@ resource "aws_s3_bucket_public_access_block" "artifacts" {
 }
 
 resource "aws_ecr_repository" "backend" {
+  count = var.enable_container_services ? 1 : 0
+
   name                 = "${var.project_name}-backend"
   image_tag_mutability = "MUTABLE"
 
@@ -43,10 +46,14 @@ resource "aws_ecr_repository" "backend" {
 }
 
 resource "aws_ecs_cluster" "main" {
+  count = var.enable_container_services ? 1 : 0
+
   name = "${var.project_name}-cluster"
 }
 
 resource "aws_cloudwatch_log_group" "backend" {
+  count = var.enable_container_services ? 1 : 0
+
   name              = "/ecs/${var.project_name}-backend"
   retention_in_days = 7
 }

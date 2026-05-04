@@ -4,11 +4,11 @@ output "artifact_bucket_name" {
 }
 
 output "ecr_repository_url" {
-  description = "ECR repository URL for the backend Docker image."
-  value       = aws_ecr_repository.backend.repository_url
+  description = "ECR repository URL for the backend Docker image when container services are enabled."
+  value       = var.enable_container_services ? aws_ecr_repository.backend[0].repository_url : "disabled-by-default"
 }
 
 output "ecs_cluster_name" {
-  description = "ECS cluster created for the project."
-  value       = aws_ecs_cluster.main.name
+  description = "ECS cluster name when container services are enabled."
+  value       = var.enable_container_services ? aws_ecs_cluster.main[0].name : "disabled-by-default"
 }

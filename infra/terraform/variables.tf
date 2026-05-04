@@ -14,3 +14,9 @@ variable "bucket_suffix" {
   description = "Unique suffix for the S3 bucket name, such as your roll number."
   type        = string
 }
+
+variable "enable_container_services" {
+  description = "Set true only when the AWS account allows ECR, ECS, and CloudWatch Logs creation."
+  type        = bool
+  default     = false
+}

@@ -73,8 +73,9 @@ AWS EC2 / GitHub Integration:
 
 Terraform:
 
-- `infra/terraform/` provisions S3, ECR, ECS cluster, and logs.
+- `infra/terraform/` provisions the S3 bucket by default.
 - S3 has versioning, encryption, and public access blocked.
+- ECR, ECS, and CloudWatch are optional because AWS Academy accounts may deny those permissions.
 
 Docker:
 
@@ -99,6 +100,7 @@ Required for AWS:
 Optional for ECS service redeploy:
 
 - `ECS_SERVICE`
+- `ENABLE_ECR_PUSH`
 
 For EC2 deployment:
 
@@ -138,17 +140,21 @@ The workflow will run Terraform automatically after a push to `main`.
 Terraform creates:
 
 - S3 bucket
-- ECR repository
-- ECS cluster
-- CloudWatch log group
+- S3 versioning
+- S3 encryption
+- S3 public access block
+
+ECR, ECS, and CloudWatch can be enabled only if your AWS role allows them. If AWS returns `AccessDeniedException` for ECR/ECS/CloudWatch, keep `ENABLE_ECR_PUSH` unset and use the EC2 deployment route for the AWS deployment demo.
 
 ### Step 3: Build Docker Image
 
 GitHub Actions builds the Docker image from `server/Dockerfile`.
 
-### Step 4: Push Docker Image to ECR
+### Step 4: Build Docker Image
 
-The workflow pushes the image to Amazon ECR with two tags:
+The workflow builds the backend Docker image in GitHub Actions.
+
+If your AWS account allows ECR and you set `ENABLE_ECR_PUSH=true`, it also pushes the image to Amazon ECR with two tags:
 
 - Git commit SHA
 - `latest`
