@@ -20,7 +20,7 @@ terraform apply \
 In AWS Academy labs, ECR/ECS/CloudWatch permissions are often blocked, so the default is S3-only.
 
 Run locally only after configuring AWS credentials:
-
+<!--  RUNNING THE FORMAT -->
 ```bash
 cd infra/terraform
 terraform init
