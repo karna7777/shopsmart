@@ -28,8 +28,17 @@ jobs:
         working-directory: server
 
       - name: Run server tests
-        run: npm test
+        run: |
+          mkdir -p ../reports
+          npm test -- --json --outputFile=../reports/backend-jest.json
         working-directory: server
+
+      - name: Upload server test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-report
+          path: reports/backend-jest.json
 
   client:
     runs-on: ubuntu-latest
@@ -52,8 +61,17 @@ jobs:
         working-directory: client
 
       - name: Run client tests
-        run: npm test -- --run
+        run: |
+          mkdir -p ../reports
+          npm test -- --run --reporter=json --outputFile=../reports/client-vitest.json
         working-directory: client
+
+      - name: Upload client test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-test-report
+          path: reports/client-vitest.json
 
       - name: Build client
         run: npm run build

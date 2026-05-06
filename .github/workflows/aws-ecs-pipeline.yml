@@ -38,12 +38,34 @@ jobs:
         working-directory: server
 
       - name: Test backend
-        run: npm test
+        run: |
+          mkdir -p ../reports
+          npm test -- --json --outputFile=../reports/backend-jest.json
         working-directory: server
+
+      - name: Upload backend test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aws-pipeline-backend-test-report
+          path: reports/backend-jest.json
 
       - name: Install frontend dependencies
         run: npm ci
         working-directory: client
+
+      - name: Test frontend
+        run: |
+          mkdir -p ../reports
+          npm test -- --run --reporter=json --outputFile=../reports/client-vitest.json
+        working-directory: client
+
+      - name: Upload frontend test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aws-pipeline-frontend-test-report
+          path: reports/client-vitest.json
 
       - name: Build frontend
         run: npm run build

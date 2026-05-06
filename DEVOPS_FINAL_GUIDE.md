@@ -37,7 +37,7 @@ GitHub Workflows / CI:
 
 - `.github/workflows/aws-ecs-pipeline.yml`
 - Runs on `push`, `pull_request`, and manual dispatch.
-- Installs dependencies, lints backend, tests backend, and builds frontend.
+- Installs dependencies, lints backend, tests backend/frontend, generates test reports, and builds frontend.
 
 Frontend:
 
@@ -48,6 +48,7 @@ Unit Testing:
 
 - Backend test is in `server/tests/app.test.js`.
 - Frontend test is in `client/src/App.test.jsx`.
+- Test reports are uploaded as GitHub Actions artifacts.
 
 Integration Testing:
 
