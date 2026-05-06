@@ -17,7 +17,7 @@ terraform apply \
   -var="enable_container_services=true"
 ```
 
-In AWS Academy labs, S3/ECR/ECS/IAM/CloudWatch permissions can be blocked, so container services are disabled by default.
+For AWS Academy Learner Lab, the ECS task definition reuses the existing `LabRole` instead of creating a new IAM role, because student accounts commonly deny `iam:CreateRole`.
 
 Run locally only after configuring AWS credentials:
 <!--  RUNNING THE FORMAT -->

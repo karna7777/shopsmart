@@ -161,7 +161,7 @@ For strict Milestone 2 grading, the intended path is:
 3. GitHub Actions pushes the image to ECR.
 4. GitHub Actions forces a new ECS service deployment.
 
-This requires AWS permissions for S3, ECR, ECS, IAM, and CloudWatch Logs. If AWS Academy denies those actions, the implementation is present in code but cannot be applied from that restricted lab role.
+This requires AWS permissions for S3, ECR, ECS, IAM PassRole, and CloudWatch Logs. For AWS Academy, Terraform reuses the existing `LabRole` instead of creating a new IAM role because `iam:CreateRole` is denied for students.
 
 ### Step 3: Build Docker Image
 
