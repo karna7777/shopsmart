@@ -9,13 +9,14 @@ on:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: shopsmart-backend
-  ECS_CLUSTER: shopsmart-cluster
-  ECS_SERVICE: ${{ secrets.ECS_SERVICE || 'shopsmart-backend-service' }}
+  ECR_REPOSITORY: shopsmart-run-${{ github.run_number }}-backend
+  ECS_CLUSTER: shopsmart-run-${{ github.run_number }}-cluster
+  ECS_SERVICE: shopsmart-run-${{ github.run_number }}-backend-service
   ENABLE_CONTAINER_SERVICES: ${{ secrets.ENABLE_CONTAINER_SERVICES }}
   ENABLE_ECR_PUSH: ${{ secrets.ENABLE_ECR_PUSH }}
   RUN_TERRAFORM_APPLY: ${{ secrets.RUN_TERRAFORM_APPLY }}
   TF_VAR_bucket_suffix: ${{ secrets.TF_BUCKET_SUFFIX }}
+  TF_VAR_deployment_id: run-${{ github.run_number }}
   TF_VAR_enable_container_services: ${{ secrets.ENABLE_CONTAINER_SERVICES || 'false' }}
   TF_VAR_container_image_tag: latest
 

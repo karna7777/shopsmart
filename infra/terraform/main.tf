@@ -1,6 +1,7 @@
 locals {
   safe_bucket_suffix = lower(trimspace(var.bucket_suffix))
-  name_prefix        = "${var.project_name}-${local.safe_bucket_suffix}"
+  safe_deployment_id = lower(trimspace(var.deployment_id))
+  name_prefix        = "${var.project_name}-${local.safe_deployment_id}-${local.safe_bucket_suffix}"
   backend_image      = var.enable_container_services ? "${aws_ecr_repository.backend[0].repository_url}:${var.container_image_tag}" : "disabled"
 }
 
@@ -38,7 +39,7 @@ resource "aws_s3_bucket_public_access_block" "artifacts" {
 resource "aws_ecr_repository" "backend" {
   count = var.enable_container_services ? 1 : 0
 
-  name                 = "${var.project_name}-backend"
+  name                 = "${var.project_name}-${local.safe_deployment_id}-backend"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -49,13 +50,13 @@ resource "aws_ecr_repository" "backend" {
 resource "aws_ecs_cluster" "main" {
   count = var.enable_container_services ? 1 : 0
 
-  name = "${var.project_name}-cluster"
+  name = "${var.project_name}-${local.safe_deployment_id}-cluster"
 }
 
 resource "aws_cloudwatch_log_group" "backend" {
   count = var.enable_container_services ? 1 : 0
 
-  name              = "/ecs/${var.project_name}-backend"
+  name              = "/ecs/${var.project_name}-${local.safe_deployment_id}-backend"
   retention_in_days = 7
 }
 
@@ -83,7 +84,7 @@ data "aws_iam_role" "lab_role" {
 resource "aws_security_group" "backend" {
   count = var.enable_container_services ? 1 : 0
 
-  name        = "${var.project_name}-backend-sg"
+  name        = "${var.project_name}-${local.safe_deployment_id}-backend-sg"
   description = "Allow public HTTP access to the ShopSmart backend container."
   vpc_id      = data.aws_vpc.default[0].id
 
@@ -107,7 +108,7 @@ resource "aws_security_group" "backend" {
 resource "aws_ecs_task_definition" "backend" {
   count = var.enable_container_services ? 1 : 0
 
-  family                   = "${var.project_name}-backend"
+  family                   = "${var.project_name}-${local.safe_deployment_id}-backend"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = "256"
@@ -117,7 +118,7 @@ resource "aws_ecs_task_definition" "backend" {
 
   container_definitions = jsonencode([
     {
-      name      = "${var.project_name}-backend"
+      name      = "${var.project_name}-${local.safe_deployment_id}-backend"
       image     = local.backend_image
       essential = true
       portMappings = [
@@ -149,7 +150,7 @@ resource "aws_ecs_task_definition" "backend" {
 resource "aws_ecs_service" "backend" {
   count = var.enable_container_services ? 1 : 0
 
-  name            = "${var.project_name}-backend-service"
+  name            = "${var.project_name}-${local.safe_deployment_id}-backend-service"
   cluster         = aws_ecs_cluster.main[0].id
   task_definition = aws_ecs_task_definition.backend[0].arn
   desired_count   = 1

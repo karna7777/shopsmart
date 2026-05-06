@@ -14,6 +14,7 @@ It can also create ECR, ECS Fargate, CloudWatch Logs, security group, task defin
 ```bash
 terraform apply \
   -var="bucket_suffix=your-roll-number" \
+  -var="deployment_id=run-1" \
   -var="enable_container_services=true"
 ```
 

@@ -43,6 +43,8 @@ Then run `AWS ECS Pipeline` from GitHub Actions.
 
 For AWS Academy student accounts, the Terraform ECS task definition reuses the existing `LabRole` as the execution and task role instead of creating a new IAM role.
 
+The GitHub workflow also passes a unique `deployment_id` based on the run number so repeated runs do not collide with partially created S3, ECR, CloudWatch, or security group names.
+
 ## GitHub Secrets Required
 
 For AWS/Terraform validation:

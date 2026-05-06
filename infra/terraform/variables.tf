@@ -10,6 +10,12 @@ variable "project_name" {
   default     = "shopsmart"
 }
 
+variable "deployment_id" {
+  description = "Unique lowercase deployment id used to avoid name collisions between repeated CI runs."
+  type        = string
+  default     = "dev"
+}
+
 variable "bucket_suffix" {
   description = "Unique suffix for the S3 bucket name, such as your roll number."
   type        = string
