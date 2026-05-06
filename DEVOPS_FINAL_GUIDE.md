@@ -154,6 +154,15 @@ Terraform creates:
 
 ECR, ECS, and CloudWatch can be enabled only if your AWS role allows them. If AWS returns `AccessDeniedException` for ECR/ECS/CloudWatch, keep `ENABLE_ECR_PUSH` unset and use the EC2 deployment route for the AWS deployment demo.
 
+For strict Milestone 2 grading, the intended path is:
+
+1. Terraform creates S3, ECR, ECS Fargate, task definition, service, security group, IAM task execution role, and CloudWatch logs.
+2. GitHub Actions builds the backend Docker image.
+3. GitHub Actions pushes the image to ECR.
+4. GitHub Actions forces a new ECS service deployment.
+
+This requires AWS permissions for S3, ECR, ECS, IAM, and CloudWatch Logs. If AWS Academy denies those actions, the implementation is present in code but cannot be applied from that restricted lab role.
+
 ### Step 3: Build Docker Image
 
 GitHub Actions builds the Docker image from `server/Dockerfile`.

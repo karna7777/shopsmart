@@ -24,6 +24,7 @@ The rubric asks for ECS/ECR or EKS deployment, but the AWS Academy lab role deni
 - `s3:CreateBucket`
 - `ecr:CreateRepository`
 - `ecs:CreateCluster`
+- IAM role creation/pass role actions for ECS task execution may also be denied
 - `logs:CreateLogGroup`
 
 Because students cannot edit the AWS Academy IAM role, this project keeps the ECS/ECR pipeline as code and uses EC2 as the working AWS deployment path.
@@ -31,6 +32,14 @@ Because students cannot edit the AWS Academy IAM role, this project keeps the EC
 Say this in evaluation:
 
 > I implemented the ECS/ECR/Terraform path, but AWS Academy denied the required IAM actions. Since I cannot modify the lab role, I used GitHub Actions to deploy the Dockerized backend to EC2, which still demonstrates AWS deployment, Docker, secrets, and an idempotent deployment workflow.
+
+If the evaluator requires strict Milestone 2 ECS/Fargate execution, the AWS role must allow S3, ECR, ECS, IAM, and CloudWatch Logs actions. With those permissions, set:
+
+- `RUN_TERRAFORM_APPLY=true`
+- `ENABLE_CONTAINER_SERVICES=true`
+- `ENABLE_ECR_PUSH=true`
+
+Then run `AWS ECS Pipeline` from GitHub Actions.
 
 ## GitHub Secrets Required
 

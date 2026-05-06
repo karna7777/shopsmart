@@ -9,7 +9,7 @@ It creates by default:
 - S3 server-side encryption
 - S3 public access block
 
-It can also create ECR, ECS, and CloudWatch Logs if your AWS account allows those services:
+It can also create ECR, ECS Fargate, CloudWatch Logs, security group, task definition, and service if your AWS account allows those services:
 
 ```bash
 terraform apply \
@@ -17,7 +17,7 @@ terraform apply \
   -var="enable_container_services=true"
 ```
 
-In AWS Academy labs, ECR/ECS/CloudWatch permissions are often blocked, so the default is S3-only.
+In AWS Academy labs, S3/ECR/ECS/IAM/CloudWatch permissions can be blocked, so container services are disabled by default.
 
 Run locally only after configuring AWS credentials:
 <!--  RUNNING THE FORMAT -->
