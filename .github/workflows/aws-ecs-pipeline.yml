@@ -13,6 +13,7 @@ env:
   ECS_CLUSTER: shopsmart-cluster
   ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
   ENABLE_ECR_PUSH: ${{ secrets.ENABLE_ECR_PUSH }}
+  RUN_TERRAFORM_APPLY: ${{ secrets.RUN_TERRAFORM_APPLY }}
   TF_VAR_bucket_suffix: ${{ secrets.TF_BUCKET_SUFFIX }}
 
 jobs:
@@ -49,7 +50,7 @@ jobs:
         working-directory: client
 
   terraform:
-    name: Terraform Validate and Apply
+    name: Terraform Validate and Optional Apply
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name != 'pull_request'
@@ -81,7 +82,12 @@ jobs:
         run: terraform plan
 
       - name: Terraform apply
+        if: env.RUN_TERRAFORM_APPLY == 'true'
         run: terraform apply -auto-approve
+
+      - name: Skip Terraform apply
+        if: env.RUN_TERRAFORM_APPLY != 'true'
+        run: echo "Terraform apply skipped because RUN_TERRAFORM_APPLY is not true."
 
   docker-and-deploy:
     name: Docker Build and Optional Deploy

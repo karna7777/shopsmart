@@ -96,6 +96,7 @@ Required for AWS:
 - `AWS_SESSION_TOKEN`
 - `AWS_REGION`
 - `TF_BUCKET_SUFFIX`
+- `RUN_TERRAFORM_APPLY`
 
 Optional for ECS service redeploy:
 
@@ -135,7 +136,13 @@ Use your AWS Academy or AWS account credentials. Add the access key, secret key,
 
 ### Step 2: Run Terraform
 
-The workflow will run Terraform automatically after a push to `main`.
+The workflow runs Terraform init, validate, and plan automatically after a push to `main`.
+
+Terraform apply runs only when this GitHub secret is set:
+
+`RUN_TERRAFORM_APPLY=true`
+
+In restricted AWS Academy labs, leave it unset or set it to `false`, because the lab role may deny `s3:CreateBucket`.
 
 Terraform creates:
 
